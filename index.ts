@@ -105,7 +105,7 @@ Docker.stream(function(data) {
 app.post("/login", function(req, res) {
 
 
-    let token = jwt.sign("oki", secret, { expiresIn: "2 days" });
+    let token = jwt.sign({ok:"oki"}, secret, { expiresIn: "2 days" });
     res.json({ token: token });
 
 
