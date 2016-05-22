@@ -26,7 +26,8 @@ let options: Idefaults = {
     secret: new Date().getTime() + "xxx"
 
 }
-let secret: string;
+
+
 
 
 if (pathExists.sync("./conf.json")) merge(options, require("./conf.json"))
@@ -63,7 +64,7 @@ console.log("listen :" + options.port);
 
 let io = IO(server);
 io.use(socketioJwt.authorize({
-    secret: secret,
+    secret: options.secret,
     handshake: true
 
 }));
@@ -105,7 +106,7 @@ Docker.stream(function(data) {
 app.post("/login", function(req, res) {
 
 
-    let token = jwt.sign({ok:"oki"}, secret, { expiresIn: "2 days" });
+    let token = jwt.sign({ok:"oki"}, options.secret, { expiresIn: "2 days" });
     res.json({ token: token });
 
 
