@@ -72,7 +72,7 @@ io.use(socketioJwt.authorize({
 io.on("connection", function(socket) {
     // in socket.io 1.0
 
-
+console.log("connected")
     socket.on("subscribe", function(room) {
         console.log("joining room", room);
         socket.join(room);
