@@ -29,7 +29,7 @@ let options: Idefaults = {
 let secret: string;
 
 
-if (!pathExists.sync(__dirname+"./conf.json")) merge(options, require("./conf.json"))
+if (pathExists.sync("./conf.json")) merge(options, require("./conf.json"))
 
 
 
