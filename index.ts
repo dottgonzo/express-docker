@@ -92,9 +92,14 @@ io.on("disconnection", function(socket) {
     console.log("bye! ");
 });
 let Docker = new docker();
-Docker.stream(function(data) {
 
-    io.sockets.in("inspects").emit("inspects", data);
+let streamInspect: any = false;
+
+Docker.stream(function(data) {
+    if (data !== streamInspect) {
+        streamInspect = data;
+        io.sockets.in("inspects").emit("inspects", streamInspect);
+    }
 
 })
 app.post("/login", function(req, res) {
@@ -118,13 +123,17 @@ app.get("/about", function(req, res) {
 
 app.get("/data", function(req, res) {
 
-
-    Docker.data().then(
-        function(data) {
+    if (streamInspect) {
+        res.json(streamInspect);
+    } else {
+        Docker.data().then(function(data) {
             res.json(data);
         }).catch(function(err) {
             res.json(err);
         })
+
+    }
+
 
 
 
