@@ -1,0 +1,7 @@
+typings/
+test/
+gulpfile.js
+tsconfig.json
+typings.json
+conf.example.json
+*.ts
