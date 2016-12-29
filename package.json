@@ -29,7 +29,8 @@
     "mocha": "^2.4.5"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start":"node index"
   },
   "repository": {
     "type": "git",
