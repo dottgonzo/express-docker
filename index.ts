@@ -67,13 +67,6 @@ const io = IO(server);
 console.log("listen :" + options.port);
 
 
-
-io.use(socketioJwt.authorize({
-    secret: options.secret,
-    handshake: true
-
-}));
-
 io.on('connection', socketioJwt.authorize({
     secret: options.secret,
     timeout: 15000 // 15 seconds to send the authentication message
@@ -106,11 +99,11 @@ Docker.stream(function (data) {
 })
 app.post("/signin", function (req, res) {
 
-console.log('signin')
-    if (req.body&&req.body.pass && req.body.pass === options.password) {
- console.log('token')
+    console.log('signin')
+    if (req.body && req.body.pass && req.body.pass === options.password) {
+        console.log('token')
         const token = jwt.sign({ ok: "oki" }, options.secret, { expiresIn: "2 days" });
- console.log(token)
+        console.log(token)
 
         res.json({ token: token });
     } else {
