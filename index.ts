@@ -106,9 +106,12 @@ Docker.stream(function (data) {
 })
 app.post("/signin", function (req, res) {
 
-
+console.log('signin')
     if (req.body&&req.body.pass && req.body.pass === options.password) {
+ console.log('token')
         const token = jwt.sign({ ok: "oki" }, options.secret, { expiresIn: "2 days" });
+ console.log(token)
+
         res.json({ token: token });
     } else {
         res.json({ error: 'wrong auth' });
