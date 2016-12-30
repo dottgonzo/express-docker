@@ -8,23 +8,29 @@ import docker = require("dockerlogs");
 import merge = require("json-add");
 import timerdaemon = require("timerdaemon");
 
+import * as http from "http";
+
+const socketioJwt = require("socketio-jwt");
 
 interface Idefaults {
     port: number;
-    secret?: string;
-
+    secret: string;
+    password: string;
 }
+
+
+
+const app = express();
 
 
 let ioSocket: any;
 
-let socketioJwt = require("socketio-jwt");
 
 
 let options: Idefaults = {
     port: 6767,
-    secret: new Date().getTime() + "xxx"
-
+    secret: new Date().getTime() + "xxx",
+    password: 'admindocker'
 }
 
 
@@ -38,8 +44,7 @@ if (pathExists.sync("./conf.json")) merge(options, require("./conf.json"))
 
 
 
-let app = express();
-app.all("/*", function(req, res, next) {
+app.all("/*", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
 
     next();
@@ -56,80 +61,75 @@ app.use(cors());
 if (pathExists.sync("/app") && pathExists.sync("/index.html")) app.use("/", express.static(__dirname + "/app"));
 
 
-let server = require("http").Server(app);
+const server = http.createServer(app);
+const io = IO(server);
 
 console.log("listen :" + options.port);
 
 
 
-let io = IO(server);
 io.use(socketioJwt.authorize({
     secret: options.secret,
     handshake: true
 
 }));
 
-io.on("connection", function(socket) {
+io.on("connection", function (socket) {
     // in socket.io 1.0
 
-console.log("connected")
-    socket.on("subscribe", function(room) {
+    console.log("connected")
+    socket.on("subscribe", function (room) {
         console.log("joining room", room);
         socket.join(room);
     });
 
-
-
-
-
-
-
     console.log("hello! ");
 });
-io.on("disconnection", function(socket) {
+
+io.on("disconnection", function (socket) {
     // in socket.io 1.0
 
 
     console.log("bye! ");
 });
+
 let Docker = new docker();
 
 let streamInspect: any = false;
 
-Docker.stream(function(data) {
+Docker.stream(function (data) {
     if (data !== streamInspect) {
         streamInspect = data;
         io.sockets.in("inspects").emit("inspects", streamInspect);
     }
 
 })
-app.post("/login", function(req, res) {
+app.post("/login/:password", function (req, res) {
 
+    const password = req.params.password
 
-    let token = jwt.sign({ok:"oki"}, options.secret, { expiresIn: "2 days" });
-    res.json({ token: token });
-
+    if (password === options.password) {
+        const token = jwt.sign({ ok: "oki" }, options.secret, { expiresIn: "2 days" });
+        res.json({ token: token });
+    } else {
+        res.json({ error: 'wrong auth' });
+    }
 
 })
 
-app.get("/about", function(req, res) {
-
-
-
+app.get("/about", function (req, res) {
     res.json(Docker);
-
-
 })
 
 
-app.get("/data", function(req, res) {
+app.get("/data", function (req, res) {
 
     if (streamInspect) {
         res.json(streamInspect);
     } else {
-        Docker.data().then(function(data) {
+        Docker.data().then(function (data) {
             res.json(data);
-        }).catch(function(err) {
+        }).catch(function (err) {
             res.json(err);
         })
 
