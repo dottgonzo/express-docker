@@ -74,16 +74,15 @@ io.use(socketioJwt.authorize({
 
 }));
 
-io.on("connection", function (socket) {
-    // in socket.io 1.0
-
-    console.log("connected")
+io.on('connection', socketioJwt.authorize({
+    secret: options.secret,
+    timeout: 15000 // 15 seconds to send the authentication message
+})).on('authenticated', function (socket) {
+    socket.join('user');
     socket.on("subscribe", function (room) {
         console.log("joining room", room);
         socket.join(room);
     });
-
-    console.log("hello! ");
 });
 
 io.on("disconnection", function (socket) {
