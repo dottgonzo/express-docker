@@ -39,11 +39,6 @@ let options: Idefaults = {
 if (pathExists.sync("./conf.json")) merge(options, require("./conf.json"))
 
 
-
-
-
-
-
 app.all("/*", function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
 
@@ -71,7 +66,7 @@ io.on('connection', socketioJwt.authorize({
     secret: options.secret,
     timeout: 15000 // 15 seconds to send the authentication message
 })).on('authenticated', function (socket) {
-    socket.join('user');
+    socket.join('inspects');
     console.log('new user')
     socket.on("subscribe", function (room) {
         console.log("joining room", room);
@@ -81,8 +76,6 @@ io.on('connection', socketioJwt.authorize({
 
 io.on("disconnection", function (socket) {
     // in socket.io 1.0
-
-
     console.log("bye! ");
 });
 
