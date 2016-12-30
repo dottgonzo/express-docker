@@ -79,6 +79,7 @@ io.on('connection', socketioJwt.authorize({
     timeout: 15000 // 15 seconds to send the authentication message
 })).on('authenticated', function (socket) {
     socket.join('user');
+    console.log('new user')
     socket.on("subscribe", function (room) {
         console.log("joining room", room);
         socket.join(room);
