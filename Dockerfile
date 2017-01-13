@@ -1,4 +1,5 @@
 FROM dottgonzo/nodealpine
+MAINTAINER Dario Caruso <dev@dariocaruso.info>
 RUN apk update && apk add docker
 COPY ./index.js /app/
 COPY ./package.json /app/
