@@ -27,7 +27,7 @@ let ioSocket: any;
 
 
 
-let options: Idefaults = {
+const options: Idefaults = {
     port: 6767,
     secret: new Date().getTime() + "xxx",
     password: 'admindocker'
